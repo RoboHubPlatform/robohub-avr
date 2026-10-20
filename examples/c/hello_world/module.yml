@@ -1,0 +1,88 @@
+#
+# hello_world — the smallest program that runs on real hardware.
+#
+# It blinks the board's user LED and writes a line to the console every second,
+# which is the whole path in one program: the cross compiler, the startup and the
+# linker script the toolchain carries, the platform's own bring-up, and the flash.
+#
+# Nothing here names the board: the program asks for "user_led" and for the
+# clock, and the board's support package says which pins those are. The same
+# source builds for any board of this platform.
+#
+# @project RoboHub Platform
+# @license MIT
+#
+
+module:
+  name: hello-world
+  type: module
+  version: 0.1.0
+  description: >
+    Blinks the user LED of an Arduino UNO R3 and writes a line to the serial
+    console every second. The smallest program that proves the whole path works.
+
+  maintainer: "Aurel Miron"
+  license: "MIT"
+  created: "2026-10-20"
+
+main: src/main.c
+
+build:
+  language: c
+
+  # The program's own sources. The entry is compiled with these; a directory is
+  # not walked, because a directory holds whatever a person left in it.
+  sources:
+    - src/main.c
+
+  # Where this project's built binary is written, inside the build directory.
+  output_dir: output
+
+  # The presets this program is written for. A build names one of them with
+  # `--preset`, and the platform that provides it is found through the
+  # dependencies below.
+  presets:
+    - uno-r3
+
+depends:
+  # The platform that implements the interfaces this program is written against,
+  # and that provides the preset above.
+  - name: robohub-avr
+    type: c
+    path: /home/miraur/projects/robohub-avr
+    git: https://github.com/RoboHubPlatform/robohub-avr
+    branch: main
+
+# The C this program may call.
+c_connection:
+  # The platform's exported CMake target.
+  library: "robohub-avr"
+  headers:
+    - platform.h
+    - console.h
+    - gpio.h
+    - timer.h
+    - error.h
+    - types.h
+    - registry.h
+
+config:
+  dialect: linux
+  kconfig_fragments:
+    - Kconfig
+  # Where this program writes the symbols it sets.
+  values_file: project.conf
+
+package:
+  kind: library
+  binary: false
+
+metadata:
+  tags:
+    - example
+    - avr
+    - arduino
+    - uno
+    - baremetal
+  stability: experimental
+  visibility: public

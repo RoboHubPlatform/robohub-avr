@@ -1,0 +1,99 @@
+#
+# hello_world — a Rho application for an Arduino UNO R3.
+#
+# The same application as `examples/c/hello_world`, written in Rho: the first
+# program that runs on real hardware rather than a host, and so the first one
+# that needs all of it — a cross compiler, the startup code and the linker
+# script the toolchain carries, the platform's bring-up, and a way to get the
+# result onto a board.
+#
+# The application declares which presets it is written for, and the platform it
+# depends on declares what those presets are. Nothing here names a repository, a
+# revision or a directory: an application says what it is for, and the platform
+# says how that is built. That split is what lets the same program be built for
+# an AVR today and for whatever else a platform provides, by changing one line.
+#
+# @project RoboHub Platform
+# @license MIT
+#
+
+module:
+  name: hello-world
+  type: module
+  version: 0.1.0
+  description: >
+    Blinks the user LED of an Arduino UNO R3 and writes a line to the serial
+    console. The smallest program that proves the whole path works: the
+    toolchain, the startup code, the linker script and the flash.
+
+  maintainer: "Aurel Miron"
+  license: "MIT"
+  created: "2026-10-20"
+
+main: src/main.rho
+
+build:
+  language: c
+
+  # Where this project's built binary is written, inside the build directory.
+  output_dir: output
+  # The presets this program is written for. A build names one of them with
+  # `-target`, and the platform that provides it is found through the dependencies
+  # below — so a preset from any platform this program depends on is equally
+  # available, and a preset nothing here provides is an error rather than a build
+  # that quietly used something else.
+  presets:
+    - uno-r3
+
+depends:
+  # `path` is where the platform is on the machine this was written on, and it is
+  # the first thing a build tries; `git` is where it is for anyone else.
+  - name: robohub-avr
+    type: c
+    path: /home/miraur/projects/robohub-avr
+    git: https://github.com/RoboHubPlatform/robohub-avr
+    branch: main
+
+# The C this program may call.
+#
+# `headers` is what this program is written against: the declarations it holds,
+# calls and passes on. rho-cimport reads them and generates the Rho side, so
+# `robohub_platform_init` and the rest follow the headers rather than being
+# written beside them and left to drift.
+c_connection:
+  # The platform's exported CMake target — the name robohub-avr publishes in its
+  # own manifest, which is the whole reason it exports one rather than leaving a
+  # consumer to guess a library name from a module name.
+  library: "robohub-avr"
+  headers:
+    - platform.h
+    - console.h
+    - gpio.h
+    - timer.h
+    - error.h
+    - types.h
+    # The registry: this program asks for its handles by name rather than being
+    # handed them, so it needs to see what is registered.
+    - registry.h
+
+config:
+  dialect: linux
+  kconfig_fragments:
+    - Kconfig
+  # Where this program writes the symbols it sets. Read where it is, by the name
+  # given here rather than by a filename a build might guess at.
+  values_file: project.conf
+
+package:
+  kind: library
+  binary: false
+
+metadata:
+  tags:
+    - example
+    - avr
+    - arduino
+    - uno
+    - baremetal
+  stability: experimental
+  visibility: public

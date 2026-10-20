@@ -1,0 +1,10 @@
+{
+  "name": "uno-r3",
+  "description": "UNO-R3: ATMEGA328P, built for this board's memory and pinout.",
+  "family": "AVR",
+  "mcu": "ATMEGA328P",
+  "core": "AVR8",
+  "board": "uno-r3",
+  "inherits": "avr",
+  "target": "atmega328p"
+}

@@ -1,0 +1,247 @@
+#
+# robohub-avr — the 8-bit AVR platform for the RoboHub Platform.
+#
+# This module implements the platform-independent interfaces declared by
+# robohub-common on an Atmel/Microchip AVR part, and carries a board support
+# package for each supported board.
+#
+# An AVR is a small part: 32 KB of flash and 2 KB of RAM on the ATmega328P of
+# an Arduino UNO R3. That shapes what this platform is. There is no vendor
+# HAL to sit on — the part's registers are the interface — and no vendor tree to
+# fetch: the toolchain carries the startup code, the linker script and the
+# headers, so the platform is the drivers and the board.
+#
+# This manifest is the platform's own description and is edited here. What it
+# declares is read by the toolchain rather than searched for: `hardware` says
+# where the boards, presets and target specs are, and each of those says where
+# its own contents are.
+#
+# SPDX-License-Identifier: MIT
+#
+
+module:
+  name: robohub-avr
+  type: platform
+  version: 0.1.0
+  description: >
+    AVR platform for the RoboHub Platform. Implements the RoboHub HAL interfaces
+    on an 8-bit AVR part and carries a board support package for each supported
+    board.
+
+  maintainer: "Aurel Miron"
+  license: "MIT"
+  created: "2026-10-20"
+
+# No main: a platform is native code a project links, not something it runs.
+
+# The platform this module implements.
+#
+# What makes a project recognizable as being built for RoboHub, from its module
+# graph rather than from a repository name or a directory: a build walks the
+# modules a project depends on, and one that declares `platform: robohub`
+# identifies the platform. The plugins that serve that identity — the ones that
+# map this platform's conventions onto the toolchain — are then chosen for it.
+#
+# The identity is the platform's, not this repository's: every RoboHub platform
+# declares the same one, so a program written against the interfaces builds the
+# same way whichever of them it is given.
+platform: robohub
+
+# Where this platform keeps the declarations of the hardware it supports.
+#
+# A build reads these rather than looking for a directory that happens to be
+# called `targets` beside a dependency. That is the whole of the contract: a
+# consumer is told which of this module's own folders holds a board's memory map
+# and how it is reached, so a platform may name its folders as it likes.
+#
+# Nothing here reaches out of this module, and nothing may: a path with `../` in
+# it is a statement about where this checkout was put rather than a declaration
+# of where the declarations are.
+hardware:
+  # Where this platform keeps the declarations of the hardware it supports.
+  boards: boards
+  # The boards this platform supports, which is a smaller list than the
+  # directory: a board is in the directory as soon as it has a pinout to
+  # describe, and in this list when a build for it works.
+  supported:
+    - uno-r3
+  # The presets this platform itself declares: one per family, saying what every
+  # board of that family shares.
+  presets: presets
+  # The target specs for parts rather than boards, since two boards carrying the
+  # same part are the same part. A board's own spec is with the board.
+  targets: targets
+  kconfig: kconfig
+
+build:
+  language: c
+  standard: c11
+
+  # Every directory a consumer needs on its include path, declared here so that a
+  # build reads them rather than being told them.
+  #
+  # `include/` is for the headers a program includes by their own name, and
+  # `include/robohub/hal/` for the interfaces, which are included as `gpio.h`
+  # rather than as `robohub/hal/gpio.h`.
+  include_dirs:
+    - include/
+    - include/robohub/
+    - include/robohub/hal/
+    - include/robohub/platform/
+    - include/robohub/drivers/
+
+  # Which of this platform's drivers a program gets is the program's answer, not
+  # an assumption made here. A driver that does not compile for this part is a
+  # build that will not compile at all, because the file is in the folder whether
+  # or not it belongs here.
+  guarded_sources:
+    - config: RH_HAL_GPIO
+      sources:
+        - src/hal/avr_gpio.c
+    - config: RH_HAL_UART
+      sources:
+        - src/hal/avr_uart.c
+    - config: RH_HAL_TIMER
+      sources:
+        - src/hal/avr_timer.c
+    - config: RH_HAL_ADC
+      sources:
+        - src/hal/avr_adc.c
+    - config: RH_HAL_PWM
+      sources:
+        - src/hal/avr_pwm.c
+    - config: RH_HAL_I2C
+      sources:
+        - src/hal/avr_i2c.c
+    - config: RH_HAL_SPI
+      sources:
+        - src/hal/avr_spi.c
+    - config: RH_HAL_ONEWIRE
+      sources:
+        - src/hal/avr_onewire.c
+    - config: RH_HAL_DHT
+      sources:
+        - src/hal/avr_dht.c
+
+  # Every source of this platform, and every one of them is a file that exists.
+  sources:
+    - src/platform/avr_console.c
+    - src/platform/avr_platform.c
+
+package:
+  kind: library
+  # A C library has no binary to build.
+  binary: false
+  include:
+    - module.yml
+    - README.md
+    - CMakeLists.txt
+    - include
+    - src
+    - boards
+    - presets
+    - targets
+    - tests
+    - kconfig
+    - cmake
+  require:
+    - module.yml
+    - CMakeLists.txt
+    - include
+    - src
+    - boards
+    - presets
+    - targets
+
+# The interfaces this platform implements.
+#
+# It is a dependency like any other, and declaring it here is what puts its
+# headers on the include path of everything this platform builds.
+depends:
+  - name: robohub-common
+    type: c
+    path: /home/miraur/projects/robohub-common
+    git: https://github.com/RoboHubPlatform/robohub-common
+    branch: main
+
+# What this platform needs on the machine it is built on.
+#
+# An AVR is programmed with a toolchain rather than a vendor tree, so what a build
+# needs is programs: a compiler that knows the part, the two that turn its output
+# into something a board can take, and the one that writes it. rho doctor reads
+# these and reports; nothing the toolchain fetches produces them.
+system_deps:
+  executables:
+    - name: avr-gcc
+      version_flag: "--version"
+      install:
+        apt: gcc-avr
+        brew: avr-gcc
+    - name: avr-objcopy
+      version_flag: "--version"
+      install:
+        apt: binutils-avr
+        brew: avr-gcc
+    - name: avr-size
+      version_flag: "--version"
+      install:
+        apt: binutils-avr
+        brew: avr-gcc
+    - name: avrdude
+      version_flag: "--version"
+      install:
+        apt: avrdude
+        brew: avrdude
+
+config:
+  # Where the target specs live, and where the presets live. A build is handed
+  # these rather than finding them.
+  targets: targets
+  presets: presets
+  # The bare-metal build resolves through the `linux` dialect, which writes
+  # `.config` and `include/generated/autoconf.h`.
+  dialect: linux
+  kconfig_fragments:
+    - Kconfig
+
+metadata:
+  tags:
+    - platform
+    - avr
+    - atmega
+    - hal
+    - embedded
+    - baremetal
+  stability: experimental
+  visibility: public
+
+# ---------------------------------------------------------------------------
+#  What this platform provides
+# ---------------------------------------------------------------------------
+#
+# The presets a build may ask this platform for. A preset is a fact about a
+# piece of hardware, and it is written in a file beside this manifest: the
+# hardware it is for. This is the index, so that a list of what is on offer is a
+# list rather than a wall.
+
+exports:
+  cmake:
+    target: "robohub-avr"
+    include_dirs:
+      - include
+      - include/robohub/platform
+    # The interfaces this module implements are in that library, so a consumer of
+    # this one needs them too.
+    link_libraries:
+      - "rho::robohub-common"
+
+# When this module's tests are eligible to be built.
+#
+# The tests exercise the chip-independent half, which is ordinary portable C, so
+# they run on the machine doing the building. They are not eligible for a
+# bare-metal target: a hosted test links a hosted C library, and one built for an
+# AVR has no `_kill` or `_getpid` for it to resolve against.
+testing:
+  host_tests:
+    enabled: true
+    target_constraint: "native"
