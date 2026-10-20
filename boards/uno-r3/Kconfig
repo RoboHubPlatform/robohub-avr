@@ -1,0 +1,9 @@
+menu "RoboHub UNO R3"
+
+config RH_BOARD_UNO_R3
+    bool "Arduino UNO R3"
+    default n
+    help
+      The Arduino UNO R3: an ATmega328P on the standard UNO headers.
+
+endmenu

@@ -1,0 +1,39 @@
+{
+  "kind": "mcu",
+  "name": "atmega328p",
+  "comment": "The ATmega328P: an 8-bit AVR with 32 KB of flash and 2 KB of RAM, the part on an Arduino UNO R3. The toolchain carries the startup and the linker script, so there is no vendor tree to fetch for it.",
+  "arch": "avr",
+  "core": "avr8",
+  "toolchain": {
+    "compiler": "avr-gcc",
+    "linker": "avr-gcc",
+    "objcopy": "avr-objcopy",
+    "size": "avr-size",
+    "flags": [
+      "-mmcu=atmega328p",
+      "-DF_CPU=16000000UL",
+      "-ffunction-sections",
+      "-fdata-sections"
+    ]
+  },
+  "flags": [
+    "-Wl,--gc-sections"
+  ],
+  "preset": "avr",
+  "family": "AVR",
+  "memory": {
+    "flash": {
+      "origin": "0x00000000",
+      "length": "0x8000",
+      "comment": "32 KB of program memory, where the image is written"
+    },
+    "ram": {
+      "origin": "0x00800100",
+      "length": "0x800",
+      "comment": "2 KB of data memory, where the stack and the data live"
+    }
+  },
+  "linker": {
+    "toolchain_script": true
+  }
+}

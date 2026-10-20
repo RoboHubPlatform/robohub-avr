@@ -1,0 +1,8 @@
+{
+  "name": "avr",
+  "description": "Building for an 8-bit AVR: the part's own headers, its startup and its linker script, all of which the toolchain carries.",
+  "family": "AVR",
+  "core": "avr8",
+  "target": "atmega328p",
+  "dependencies": []
+}

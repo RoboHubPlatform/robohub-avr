@@ -1,0 +1,176 @@
+{
+  "kind": "board",
+  "name": "uno-r3",
+  "comment": "An Arduino UNO R3: an ATmega328P (8-bit AVR, 32 KB flash, 2 KB SRAM) on the standard UNO headers. The serial lines are on D0 and D1, the I2C pair on A4 and A5, the SPI group on D10 to D13, and the user LED is on D13.",
+  "board": "UNO_R3",
+  "mcu": "ATMEGA328P",
+  "core": "avr8",
+  "arch": "avr",
+  "preset": "atmega328p",
+  "target": "atmega328p",
+  "toolchain": {
+    "compiler": "avr-gcc",
+    "linker": "avr-gcc",
+    "objcopy": "avr-objcopy",
+    "size": "avr-size",
+    "flags": [
+      "-mmcu=atmega328p",
+      "-DF_CPU=16000000UL",
+      "-ffunction-sections",
+      "-fdata-sections"
+    ]
+  },
+  "defines": [
+    "F_CPU=16000000UL"
+  ],
+  "flags": [
+    "-Wl,--gc-sections"
+  ],
+  "flash": {
+    "tool": "avrdude",
+    "command": "avrdude -p m328p -c arduino -P {env:AVRDUDE_PORT:-/dev/ttyUSB0} -b 115200 -U flash:w:{binary}",
+    "comment": "Which serial line the board is on is a fact about the machine, not about the board: the command reads it from the environment, and the value beside it is what the machine falls back to. This avrdude does not read the environment itself, which is why the command names it here \u2014 AVRDUDE_PORT in the environment reaches the command, and a board on another line is flashed without the spec being changed."
+  },
+  "pins": {
+    "user_led": {
+      "gpio": 13,
+      "active_high": true,
+      "comment": "the on-board LED, on D13"
+    },
+    "uart0_tx": {
+      "gpio": 1
+    },
+    "uart0_rx": {
+      "gpio": 0
+    },
+    "i2c0_sda": {
+      "gpio": 18,
+      "comment": "A4"
+    },
+    "i2c0_scl": {
+      "gpio": 19,
+      "comment": "A5"
+    },
+    "spi0_tx": {
+      "gpio": 11,
+      "comment": "D11, MOSI"
+    },
+    "spi0_rx": {
+      "gpio": 12,
+      "comment": "D12, MISO"
+    },
+    "spi0_sck": {
+      "gpio": 13,
+      "comment": "D13, SCK"
+    },
+    "spi0_csn": {
+      "gpio": 10,
+      "comment": "D10, SS"
+    },
+    "onewire0_dq": {
+      "gpio": 2,
+      "comment": "D2, free on the headers"
+    },
+    "dht0_data": {
+      "gpio": 4,
+      "comment": "D4, free on the headers"
+    },
+    "adc0_ch0": {
+      "gpio": 14,
+      "comment": "A0"
+    },
+    "adc0_ch1": {
+      "gpio": 15,
+      "comment": "A1"
+    },
+    "adc0_ch2": {
+      "gpio": 16,
+      "comment": "A2"
+    },
+    "adc0_ch3": {
+      "gpio": 17,
+      "comment": "A3"
+    },
+    "adc0_ch4": {
+      "gpio": 18,
+      "comment": "A4, the I2C data line"
+    },
+    "adc0_ch5": {
+      "gpio": 19,
+      "comment": "A5, the I2C clock line"
+    },
+    "pwm0_ch0": {
+      "gpio": 9,
+      "comment": "D9"
+    },
+    "pwm0_ch1": {
+      "gpio": 10,
+      "comment": "D10, the SPI select"
+    },
+    "pwm0_ch2": {
+      "gpio": 11,
+      "comment": "D11, the SPI output"
+    },
+    "pwm0_ch3": {
+      "gpio": 3,
+      "comment": "D3"
+    }
+  },
+  "peripherals": {
+    "uart0": {
+      "instance": "uart0",
+      "pins": {
+        "tx": "1",
+        "rx": "0"
+      }
+    },
+    "i2c0": {
+      "instance": "i2c0",
+      "pins": {
+        "sda": "18",
+        "scl": "19"
+      }
+    },
+    "spi0": {
+      "instance": "spi0",
+      "pins": {
+        "tx": "11",
+        "rx": "12",
+        "sck": "13",
+        "csn": "10"
+      }
+    },
+    "adc0": {
+      "instance": "adc0",
+      "pins": {
+        "channel0": "14",
+        "channel1": "15",
+        "channel2": "16",
+        "channel3": "17",
+        "channel4": "18",
+        "channel5": "19"
+      }
+    },
+    "pwm0": {
+      "instance": "pwm0",
+      "pins": {
+        "channel0": "9",
+        "channel1": "10",
+        "channel2": "11",
+        "channel3": "3"
+      }
+    },
+    "onewire0": {
+      "instance": "onewire0",
+      "pins": {
+        "dq": "2"
+      }
+    },
+    "dht0": {
+      "instance": "dht0",
+      "pins": {
+        "data": "4"
+      }
+    }
+  }
+}

@@ -1,0 +1,123 @@
+#
+# uno-r3 — the Arduino UNO R3 board support package for robohub-avr.
+#
+# The board is an ATmega328P and the standard UNO headers. What this module says
+# is which part it is, where its pins are, and how a program is put on it.
+#
+# SPDX-License-Identifier: MIT
+#
+
+module:
+  name: uno-r3
+  type: platform-board
+  version: 0.1.0
+  description: >
+    UNO R3: ATmega328P, 32 KB flash, 2 KB SRAM, on the standard UNO headers.
+    The serial lines are on D0 and D1, I2C on A4 and A5, SPI on D10 to D13, and
+    the user LED is on D13.
+
+  maintainer: "Aurel Miron"
+  license: "MIT"
+  created: "2026-10-20"
+
+# No main: a board is native code a project links, not something it runs.
+
+# Where this checkout keeps the declarations of the hardware it supports.
+hardware:
+  # This board's own presets. A board may have several — one per way of
+  # building it — and they belong to it rather than to the platform.
+  presets: presets
+  # And its own target spec: the memory map and the flash command of the part it
+  # carries.
+  target: target.json
+
+build:
+  language: c
+  standard: c11
+
+  # This board's own support package, named rather than found.
+  #
+  # The platform's sources include `bsp.h`, so a build has to be told where this
+  # board keeps it: a directory that is only right in this checkout is a
+  # directory that is wrong the moment the module is fetched or published.
+  #
+  # The sources are named file by file rather than as a directory. A directory
+  # says "everything in here", which is not what a board means.
+  include_dirs:
+    - bsp/
+
+  sources:
+    - bsp/bsp.c
+
+config:
+  dialect: linux
+  kconfig_fragments:
+    - Kconfig
+
+package:
+  kind: library
+  binary: false
+  include:
+    - module.yml
+    - Kconfig
+    - bsp
+    - presets
+    - target.json
+  require:
+    - module.yml
+    - Kconfig
+
+metadata:
+  tags:
+    - board
+    - arduino
+    - uno
+    - avr
+    - atmega328p
+  stability: experimental
+  visibility: public
+
+# ---------------------------------------------------------------------------
+#  The board
+# ---------------------------------------------------------------------------
+
+board:
+  designation: UNO_R3
+  mcu: ATMEGA328P
+  family: AVR
+  core: AVR8
+  summary: 32 KB flash, 2 KB SRAM, the standard UNO headers
+
+  # The preset this board builds with, and the target spec that goes with it.
+  preset: avr
+  target: atmega328p
+
+  # The headers an Arduino is known by, and the two more the board adds. A
+  # connector is named, and what it carries is said of it.
+  connectors:
+    - name: the UNO headers
+      signal: D0 to D13, A0 to A5, power and the analog reference
+    - name: the USB header
+      signal: carrying the serial lines
+
+  # Programming goes over the serial line the board already has, through the
+  # bootloader that is on the part. Nothing external is needed, and which port it
+  # is comes from the environment rather than from the spec.
+  programmer:
+    tool: the board's own bootloader
+    comment: over the serial line
+  debug_interface: none
+
+  flash:
+    tool: avrdude
+    interface: arduino
+    comment: >
+      Which serial line the board is on is AVRDUDE_PORT, which is avrdude's own
+      convention; a spec that carried a path would be a spec that was wrong on
+      every machine but the one it was written on.
+
+  # Filled in by the board's own implementation rather than here. A pin map
+  # written once for the family and copied to every board would be a map that is
+  # wrong on whichever board it happens to be wrong on.
+  pins: {}
+  peripherals: []

@@ -1,0 +1,25 @@
+menu "RoboHub AVR Platform"
+
+config ROBOHUB_AVR
+    bool "Enable the RoboHub AVR platform"
+    default y
+    help
+      Implementations of the RoboHub HAL interfaces on an 8-bit AVR part. A
+      project that depends on robohub-avr needs this; a project on another
+      platform does not.
+
+config ROBOHUB_AVR_ASSERT
+    bool "Check driver arguments and report failures"
+    default y
+    help
+      Have the HAL implementations reject an invalid argument with
+      ROBOHUB_ERR_INVALID_ARG rather than writing to a peripheral that was not
+      configured. A driver that does not check is faster; a driver that does not
+      check turns a wiring mistake into a silent wrong answer.
+
+# The per-driver symbols live in robohub-common, which owns the interfaces, and
+# are not sourced from here: the build passes each fragment to the generator
+# explicitly, and a fragment that was both sourced and passed would be defined
+# twice by anything that follows the sources.
+
+endmenu
