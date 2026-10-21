@@ -203,9 +203,16 @@ target_compile_features(robohub-avr PUBLIC c_std_11)
 if(ROBOHUB_AVR_HOSTED)
     message(STATUS "[robohub-avr] registering host unit tests")
     enable_testing()
-    add_executable(robohub-avr-test-error tests/test_error.c)
+    add_executable(robohub-avr-test-error tests/unit/test_error.c)
     target_link_libraries(robohub-avr-test-error PRIVATE robohub-avr)
     add_test(NAME robohub-avr-test-error COMMAND robohub-avr-test-error)
+
+    # The console, which is the one part of this platform that has no part in
+    # it: a fake USART behind it is enough to check what it does with the bytes
+    # and what it says when it cannot.
+    add_executable(robohub-avr-test-console tests/unit/test_console.c)
+    target_link_libraries(robohub-avr-test-console PRIVATE robohub-avr)
+    add_test(NAME robohub-avr-test-console COMMAND robohub-avr-test-console)
 endif()
 
 # ---------------------------------------------------------------------------

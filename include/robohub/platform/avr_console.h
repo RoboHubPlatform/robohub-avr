@@ -18,9 +18,20 @@ extern "C" {
 #pragma once
 
 #include "robohub/platform/avr_uart.h"
+#include "robohub/hal/console.h"
 
 /* The console writes to this USART from now on. */
 void avr_console_attach(RoboHubAVRUART* uart);
+
+/*
+ * The console's own state: whether it is open, and how much it has written.
+ *
+ * It is declared here because the contract's header says what the console does
+ * and not where a platform keeps the answer, and a test that cannot see
+ * whether a console is open cannot check that a console which was not opened
+ * says so.
+ */
+extern RoboHubConsole robohub_console;
 
 /*
  * The runtime's output: the console, by the name the runtime is told to call.
