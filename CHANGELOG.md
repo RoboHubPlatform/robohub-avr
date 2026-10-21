@@ -35,6 +35,23 @@ runtime expects to be reached.
 The host test that the build has been asking for is here, and the vendored
 platform's tests are no longer registered in a build that does not build them.
 
+The tests are registered in a registry of their own, so that the orchestrator can
+say what they are, run one of them by its name, and say whether it is run at
+all: `robohub test list`, `robohub test run`, `robohub test enable` and
+`disable`. A test that is not enabled is still a test — it is there, and it is
+not run.
+
+The platform's tests are in folders now, as the unit tests and the smoke tests
+are two different things: `tests/unit/` holds the tests of the chip-independent
+half — the error codes every layer agrees on, and the console, which is the one
+part of the platform that has no part in it — and `tests/smoke/` holds the
+examples, built for the board the platform carries. A manifest says which is
+which, and the orchestrator runs either on its own.
+
+The console's state is declared in its header now, because a test that cannot
+see whether a console is open cannot check that a console which was not opened
+says so.
+
 Which serial line the board is on is no longer written into the board's spec.
 The flash command reads it from the environment — `AVRDUDE_PORT` — and the
 value in the spec is what the machine falls back to, so a board on another line

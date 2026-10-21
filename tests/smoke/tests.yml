@@ -1,0 +1,32 @@
+# robohub-avr's smoke tests.
+#
+# A smoke test says whether the thing still works, without saying how well. For
+# a platform that is: does the program still build for the board, and does the
+# toolchain still know how to lay it out and how to write it?
+#
+# The build is the smoke test. A platform that no longer builds for its board
+# has failed in the way that matters, and the toolchain says which of the three
+# outcomes this is: it built, it did not build, or it cannot be tried here yet
+# — a board whose toolchain is not installed is not a broken platform, and
+# reporting it as one is how smoke suites get turned off.
+#
+# Each example is built for the board the platform carries. The examples are
+# the platform's own: a program in C and a program in Rho, so that both the
+# platform and the connection between the language and the platform are covered.
+name: robohub-avr-smoke
+suites:
+  - name: the C example builds for the board
+    kind: build
+    enabled: true
+    build:
+      project: examples/c/hello_world
+      target: uno-r3
+    tags: [smoke, hardware, avr]
+
+  - name: the Rho example builds for the board
+    kind: build
+    enabled: true
+    build:
+      project: examples/rho/hello_world
+      target: uno-r3
+    tags: [smoke, hardware, avr, rho]

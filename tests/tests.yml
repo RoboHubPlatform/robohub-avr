@@ -1,0 +1,17 @@
+# robohub-avr's tests.
+#
+# The manifest that says what this platform's tests are. The tests themselves
+# are in folders, because they are two different things: the unit tests are the
+# platform's own, and the smoke tests are about the board it is built for.
+#
+#   tests/unit/   the chip-independent half, on the host
+#   tests/smoke/  the examples, built for the board
+#
+# Both are declared in the format the toolchain's runner reads, and this
+# manifest includes them, so one run covers both and a run of either can be
+# asked for on its own.
+name: robohub-avr
+include:
+  - unit/tests.yml
+  - smoke/tests.yml
+suites: []

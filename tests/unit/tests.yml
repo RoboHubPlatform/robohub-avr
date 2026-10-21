@@ -1,0 +1,19 @@
+# robohub-avr's unit tests.
+#
+# The tests of the chip-independent half of this platform: the parts of it that
+# are ordinary portable C and run on the machine doing the building. They are
+# the unit tests, and the smoke tests are in ../smoke.
+#
+# What is here is what the platform does without a part: the error codes every
+# layer agrees on, and the console — the one part of the platform that has no
+# part in it, since it is a USART behind a contract.
+#
+# The build is the platform's own: the tests are registered with CMake and run
+# with ctest, because a C library's tests are C and CMake is what builds them.
+name: robohub-avr-unit
+suites:
+  - name: the platform's own tests
+    kind: command
+    enabled: true
+    command: ["sh", "-c", "cmake -S . -B build/tests -DRHO_BUILD_HOST_TESTS=ON >/dev/null && cmake --build build/tests --parallel >/dev/null && ctest --test-dir build/tests --output-on-failure"]
+    tags: [unit, host]
