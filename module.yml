@@ -245,3 +245,11 @@ testing:
   host_tests:
     enabled: true
     target_constraint: "native"
+
+docs:
+  title: RoboHub AVR Platform
+  section: platforms
+  order: "10"
+  index: docs/index.md
+  sources:
+    - docs/index.md
