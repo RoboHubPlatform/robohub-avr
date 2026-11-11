@@ -8,12 +8,12 @@
 # layer agrees on, and the console — the one part of the platform that has no
 # part in it, since it is a USART behind a contract.
 #
-# The build is the platform's own: the tests are registered with CMake and run
-# with ctest, because a C library's tests are C and CMake is what builds them.
+# The tests are registered with CMake and run with ctest, because a C library's
+# tests are C; the ctest kind configures, builds and runs them, so `rho test` is
+# the one way they are run.
 name: robohub-avr-unit
 suites:
   - name: the platform's own tests
-    kind: command
-    enabled: true
-    command: ["sh", "-c", "cmake -S . -B build/tests -DRHO_BUILD_HOST_TESTS=ON >/dev/null && cmake --build build/tests --parallel >/dev/null && ctest --test-dir build/tests --output-on-failure"]
+    kind: ctest
     tags: [unit, host]
+    ctest: {}
