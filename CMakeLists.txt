@@ -115,6 +115,7 @@ endif()
 set(ROBOHUB_AVR_BAREMETAL_SOURCES
     src/platform/avr_console.c
     src/platform/avr_platform.c
+    src/platform/avr_nonce.c
 )
 
 # And the driver for each symbol the project set. A symbol nobody set contributes

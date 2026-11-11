@@ -130,6 +130,7 @@ build:
   sources:
     - src/platform/avr_console.c
     - src/platform/avr_platform.c
+    - src/platform/avr_nonce.c
 
 package:
   kind: library
