@@ -15,6 +15,7 @@
 
 module:
   name: hello-world
+  id: robohub-avr.examples.c.hello_world
   type: module
   version: 0.1.0
   description: >
