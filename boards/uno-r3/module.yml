@@ -9,7 +9,9 @@
 
 module:
   name: uno-r3
-  id: robohub-avr.boards.uno-r3
+  id: robohub.platform-board.uno-r3
+  previous_ids:
+    - robohub-avr.boards.uno-r3
   type: platform-board
   version: 0.1.0
   description: >

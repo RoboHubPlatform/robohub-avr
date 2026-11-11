@@ -21,7 +21,9 @@
 
 module:
   name: robohub-avr
-  id: robohub-avr
+  id: robohub.platform.avr
+  previous_ids:
+    - robohub-avr
   type: platform
   version: 0.1.0
   description: >

@@ -19,7 +19,9 @@
 
 module:
   name: hello-world
-  id: robohub-avr.examples.rho.hello_world
+  id: robohub.example.hello-world-avr-rho
+  previous_ids:
+    - robohub-avr.examples.rho.hello_world
   type: module
   version: 0.1.0
   description: >
