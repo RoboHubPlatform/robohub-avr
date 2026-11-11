@@ -51,7 +51,7 @@ depends:
   # the first thing a build tries; `git` is where it is for anyone else.
   - name: robohub-avr
     type: c
-    path: ${RHO_WORKSPACE}/robohub-avr
+    path: ${ROBOHUB_WORKSPACE}/robohub-avr
     git: https://github.com/RoboHubPlatform/robohub-avr
     branch: main
 

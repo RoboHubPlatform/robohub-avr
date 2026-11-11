@@ -50,7 +50,7 @@ depends:
   # and that provides the preset above.
   - name: robohub-avr
     type: c
-    path: ${RHO_WORKSPACE}/robohub-avr
+    path: ${ROBOHUB_WORKSPACE}/robohub-avr
     git: https://github.com/RoboHubPlatform/robohub-avr
     branch: main
 
