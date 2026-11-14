@@ -127,3 +127,7 @@ The image is smaller than the C one — 9 KB against 11.5 KB — because the Rho
 runtime's `print` goes straight out of the platform's console rather than
 through the C library's formatting, which on a part with 2 KB of RAM is a large
 thing to pull in.
+
+## License
+
+MIT. See [LICENSE](LICENSE).
