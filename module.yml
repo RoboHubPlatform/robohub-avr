@@ -25,7 +25,7 @@ module:
   previous_ids:
     - robohub-avr
   type: platform
-  version: 0.1.0
+  version: 0.2.0
   description: >
     AVR platform for the RoboHub Platform. Implements the RoboHub HAL interfaces
     on an 8-bit AVR part and carries a board support package for each supported
@@ -131,6 +131,7 @@ build:
     - src/platform/avr_console.c
     - src/platform/avr_platform.c
     - src/platform/avr_nonce.c
+    - src/platform/avr_keystore.c
 
 package:
   kind: library

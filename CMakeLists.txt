@@ -116,6 +116,7 @@ set(ROBOHUB_AVR_BAREMETAL_SOURCES
     src/platform/avr_console.c
     src/platform/avr_platform.c
     src/platform/avr_nonce.c
+    src/platform/avr_keystore.c
 )
 
 # And the driver for each symbol the project set. A symbol nobody set contributes
@@ -126,6 +127,13 @@ set(ROBOHUB_AVR_BAREMETAL_SOURCES
 # does that program want" has not been asked yet. Guessing "none" would compile a
 # module that cannot work.
 set(ROBOHUB_AVR_CORE_SOURCES ${ROBOHUB_AVR_BAREMETAL_SOURCES})
+
+# The nonce is the part's EEPROM (avr/eeprom.h), which a host has no header for,
+# so a host build leaves it out; nothing the host tests link reaches it. The
+# keystore stays in: it is guarded by __AVR__ and only names itself on the host.
+if(ROBOHUB_AVR_HOSTED)
+    list(REMOVE_ITEM ROBOHUB_AVR_CORE_SOURCES src/platform/avr_nonce.c)
+endif()
 
 if(NOT ROBOHUB_AVR_HOSTED)
     foreach(driver
@@ -171,6 +179,15 @@ add_library(robohub-avr STATIC ${ROBOHUB_AVR_CORE_SOURCES})
 # cannot be linked without it. PUBLIC, not PRIVATE: a consumer of this one needs
 # the interfaces too.
 target_link_libraries(robohub-avr PUBLIC rho::robohub-common)
+
+# The device keystore's strong implementation is taken from this archive on
+# every link, whatever order the archives come in: the platform's keystore
+# object defines `rh_keystore_platform`, which nothing else defines, so naming it
+# undefined pulls that object in, and its rh_keystore_load/store override the
+# weak defaults in robohub-common even if those were seen first.
+if(NOT ROBOHUB_AVR_HOSTED)
+    target_link_options(robohub-avr INTERFACE "LINKER:--undefined=rh_keystore_platform")
+endif()
 
 target_include_directories(robohub-avr PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include

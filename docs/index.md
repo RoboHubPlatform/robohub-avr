@@ -45,3 +45,20 @@ blinks the user LED and writes a line to the console every second.
 
 `examples/rho/hello_world` is that program in Rho, written against the
 contracts and nothing else.
+
+## The device keystore
+
+The rotated device key (`robohub/keystore.h`) is kept in EEPROM, in the 80 bytes
+directly below the nonce counter (which holds the last four bytes): slot A at
+`E2END-83`, slot B at `E2END-43` — `0x3AC` and `0x3D4` on an ATmega328P. The A/B
+records, CRC32 and sequence numbers are robohub-common's
+(`robohub/keystore_core.h`); `src/platform/avr_keystore.c` reads and writes the
+bytes with `eeprom_read_block` / `eeprom_update_block`, which skips bytes that
+already hold their value. An application that uses EEPROM keeps below
+`RH_KEYSTORE_EEPROM_BASE`. Like the nonce counter, the keys survive a reflash
+unless the chip is erased with the EESAVE fuse unprogrammed; then the board
+falls back to its compiled-in key.
+
+There is no production preset for AVR: an ATmega has lock bits but no secure
+boot or encrypted storage, and `rho flash --production` says this board has no
+production mode.

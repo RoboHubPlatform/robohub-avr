@@ -56,3 +56,7 @@ Which serial line the board is on is no longer written into the board's spec.
 The flash command reads it from the environment — `AVRDUDE_PORT` — and the
 value in the spec is what the machine falls back to, so a board on another line
 is flashed without the platform being changed.
+
+## [0.2.0] - 2026-11-14
+
+The board key is kept in EEPROM below the nonce counter. AVR has no production mode. Host tests build without avr-libc.
