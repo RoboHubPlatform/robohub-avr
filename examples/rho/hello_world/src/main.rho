@@ -50,7 +50,7 @@ fn main() void {
     print("says something every second, from here on\n")
     print("--------------------------------------\n")
 
-    let seconds: u32 = 0
+    var seconds: u32 = 0
     while true {
         seconds = seconds + 1
         print("[")
