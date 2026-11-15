@@ -25,7 +25,7 @@ module:
   previous_ids:
     - robohub-avr
   type: platform
-  version: 0.2.0
+  version: 0.2.1
   description: >
     AVR platform for the RoboHub Platform. Implements the RoboHub HAL interfaces
     on an 8-bit AVR part and carries a board support package for each supported
@@ -179,8 +179,11 @@ system_deps:
   executables:
     - name: avr-gcc
       version_flag: "--version"
+      # The compiler is no use without its C library: Debian ships avr-libc
+      # apart from gcc-avr, and a machine with only the compiler fails on
+      # string.h. Homebrew's avr-gcc carries it.
       install:
-        apt: gcc-avr
+        apt: gcc-avr avr-libc
         brew: avr-gcc
     - name: avr-objcopy
       version_flag: "--version"

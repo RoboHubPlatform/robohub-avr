@@ -60,3 +60,7 @@ is flashed without the platform being changed.
 ## [0.2.0] - 2026-11-14
 
 The board key is kept in EEPROM below the nonce counter. AVR has no production mode. Host tests build without avr-libc.
+
+## [0.2.1] - 2026-11-15
+
+Installing the AVR compiler installs its C library too (`apt: gcc-avr avr-libc`): Debian ships avr-libc apart from gcc-avr, so a machine set up from this manifest alone — a fresh CI runner — failed on `string.h`.
