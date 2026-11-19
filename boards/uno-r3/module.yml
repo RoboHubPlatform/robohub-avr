@@ -13,7 +13,7 @@ module:
   previous_ids:
     - robohub-avr.boards.uno-r3
   type: platform-board
-  version: 0.1.0
+  version: 0.1.1
   description: >
     UNO R3: ATmega328P, 32 KB flash, 2 KB SRAM, on the standard UNO headers.
     The serial lines are on D0 and D1, I2C on A4 and A5, SPI on D10 to D13, and

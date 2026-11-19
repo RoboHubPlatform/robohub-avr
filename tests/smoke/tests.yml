@@ -15,6 +15,7 @@
 # platform and the connection between the language and the platform are covered.
 name: robohub-avr-smoke
 suites:
+  # @verifies AVR-0004
   - name: the C example builds for the board
     kind: build
     enabled: true
@@ -23,6 +24,7 @@ suites:
       target: uno-r3
     tags: [smoke, hardware, avr]
 
+  # @verifies AVR-0004
   - name: the Rho example builds for the board
     kind: build
     enabled: true

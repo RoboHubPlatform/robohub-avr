@@ -28,8 +28,8 @@
   ],
   "flash": {
     "tool": "avrdude",
-    "command": "avrdude -p m328p -c arduino -P {env:AVRDUDE_PORT:-/dev/ttyUSB0} -b 115200 -U flash:w:{binary}",
-    "comment": "Which serial line the board is on is a fact about the machine, not about the board: the command reads it from the environment, and the value beside it is what the machine falls back to. This avrdude does not read the environment itself, which is why the command names it here \u2014 AVRDUDE_PORT in the environment reaches the command, and a board on another line is flashed without the spec being changed."
+    "command": "avrdude -p m328p -c arduino -P {env:AVRDUDE_PORT:-/dev/ttyUSB0} -b 115200 -D -U flash:w:{binary}",
+    "comment": "Which serial line the board is on is a fact about the machine, not about the board: the command reads it from the environment, and the value beside it is what the machine falls back to. This avrdude does not read the environment itself, which is why the command names it here \u2014 AVRDUDE_PORT in the environment reaches the command, and a board on another line is flashed without the spec being changed. -D: the bootloader erases each page as it writes it, so avrdude never asks for a chip erase, and the EEPROM (the nonce counter and the device keystore, ADR-0002) is left as it is."
   },
   "pins": {
     "user_led": {

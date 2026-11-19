@@ -38,6 +38,7 @@ const char rh_keystore_platform[] = "avr";
 #define RH_KEYSTORE_EEPROM_BASE (E2END + 1 - 4 - RH_KEYSTORE_SLOTS * RH_KEYSTORE_RECORD_SIZE)
 #endif
 
+// @req AVR-0006
 static void *slot_address(unsigned slot)
 {
     return (void *)(uintptr_t)(RH_KEYSTORE_EEPROM_BASE + slot * RH_KEYSTORE_RECORD_SIZE);

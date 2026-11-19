@@ -91,6 +91,7 @@ void bsp_init(void)
     (void)led_gpio.interface.write(&led_gpio.interface, RH_UNO_R3_LED_PIN, 0u);
 }
 
+// @req AVR-0001
 void bsp_register_hals(void)
 {
     (void)avr_gpio_create(&gpio0, "gpio0", 0u);

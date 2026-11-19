@@ -5,14 +5,16 @@
 # the unit tests, and the smoke tests are in ../smoke.
 #
 # What is here is what the platform does without a part: the error codes every
-# layer agrees on, and the console — the one part of the platform that has no
-# part in it, since it is a USART behind a contract.
+# layer agrees on, the console — the one part of the platform that has no part
+# in it, since it is a USART behind a contract — and the nonce source, over an
+# EEPROM and a watchdog the test fakes, across reboots and a chip erase.
 #
 # The tests are registered with CMake and run with ctest, because a C library's
 # tests are C; the ctest kind configures, builds and runs them, so `rho test` is
 # the one way they are run.
 name: robohub-avr-unit
 suites:
+  # @verifies AVR-0002, AVR-0007, AVR-0009
   - name: the platform's own tests
     kind: ctest
     tags: [unit, host]

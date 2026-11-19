@@ -45,6 +45,7 @@ RoboHubConsoleError robohub_console_init(void)
  * the board's own console goes, so a `print` in a program and a write through the
  * console contract reach the same place.
  */
+// @req AVR-0003
 int rho_avr_write(int fd, const char* data, int len)
 {
     (void)fd;
@@ -58,6 +59,7 @@ int rho_avr_write(int fd, const char* data, int len)
     return len;
 }
 
+// @req AVR-0002
 RoboHubConsoleError robohub_console_write(const char* data, size_t len)
 {
     if (data == NULL && len != 0u) {

@@ -66,6 +66,7 @@ static void expect(int condition, const char* what)
     }
 }
 
+// @verifies AVR-0002
 int main(void)
 {
     FakeUART fake;

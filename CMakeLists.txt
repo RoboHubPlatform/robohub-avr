@@ -231,6 +231,14 @@ if(ROBOHUB_AVR_HOSTED)
     add_executable(robohub-avr-test-console tests/unit/test_console.c)
     target_link_libraries(robohub-avr-test-console PRIVATE robohub-avr)
     add_test(NAME robohub-avr-test-console COMMAND robohub-avr-test-console)
+
+    # The nonce source, compiled against an EEPROM and a watchdog jitter the test
+    # fakes (tests/unit/fake), so that reboots and a chip erase can be simulated
+    # and no nonce shown to be said twice across them.
+    add_executable(robohub-avr-test-nonce tests/unit/test_nonce.c)
+    target_include_directories(robohub-avr-test-nonce PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/tests/unit/fake)
+    target_link_libraries(robohub-avr-test-nonce PRIVATE robohub-avr)
+    add_test(NAME robohub-avr-test-nonce COMMAND robohub-avr-test-nonce)
 endif()
 
 # ---------------------------------------------------------------------------

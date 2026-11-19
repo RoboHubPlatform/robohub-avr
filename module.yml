@@ -25,7 +25,7 @@ module:
   previous_ids:
     - robohub-avr
   type: platform
-  version: 0.2.1
+  version: 0.2.2
   description: >
     AVR platform for the RoboHub Platform. Implements the RoboHub HAL interfaces
     on an 8-bit AVR part and carries a board support package for each supported
@@ -49,6 +49,10 @@ module:
 # declares the same one, so a program written against the interfaces builds the
 # same way whichever of them it is given.
 platform: robohub
+
+# The platform's requirements are numbered AVR-NNNN and serve the system
+# requirements robohub holds.
+requirements: { prefix: AVR, parent: robohub }
 
 # Where this platform keeps the declarations of the hardware it supports.
 #
@@ -258,6 +262,6 @@ docs:
   title: RoboHub AVR Platform
   section: platforms
   order: "10"
-  index: docs/index.md
+  index: docs/doc/index.md
   sources:
-    - docs/index.md
+    - docs/doc/index.md

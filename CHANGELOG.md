@@ -64,3 +64,21 @@ The board key is kept in EEPROM below the nonce counter. AVR has no production m
 ## [0.2.1] - 2026-11-15
 
 Installing the AVR compiler installs its C library too (`apt: gcc-avr avr-libc`): Debian ships avr-libc apart from gcc-avr, so a machine set up from this manifest alone — a fresh CI runner — failed on `string.h`.
+
+## [0.2.2] - 2026-11-19
+
+Security: a board's nonces no longer recur after a chip erase. A chip erase with
+the EESAVE fuse unprogrammed (an ISP programmer, burning a bootloader) put the
+EEPROM boot counter back to all ones while the board's compiled-in key stayed the
+same, so the board said the nonces of its first boots again; someone who had
+recorded the gateway's session answer to one of them could send it again, and
+the board would take the recorded session's keys, restart its counters and accept
+that session's recorded commands. A counter that reads as erased is now seeded
+once from the watchdog's jitter against the CPU clock (about a second, interrupts
+off) instead of advanced from zero, and a source that does not vary, or a part
+with WDTON programmed, gives no nonce and no session rather than a guessable one
+(ADR-0002, amending ADR-0001; AVR-0009). A counter that is not erased counts on as
+before. The uno-r3 flash command passes avrdude `-D`, so `rho flash` never asks
+for a chip erase and EEPROM survives it (AVR-0010; uno-r3 0.1.1); the docs say how to program
+EESAVE before using an ISP programmer. `tests/unit/test_nonce.c` simulates reboots
+and chip erases over a fake EEPROM and checks no nonce is said twice.

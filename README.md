@@ -102,6 +102,11 @@ AVRDUDE_PORT=/dev/ttyUSB1 rho flash -target uno-r3 build/output/main
 The port is in the board's own spec, because that is where a board says how it
 is reached. A board on another line has it changed there.
 
+The command passes avrdude `-D`, so a flash never asks for a chip erase and the
+EEPROM (the nonce counter and the device keystore) survives it. An ISP
+programmer erases EEPROM unless the EESAVE fuse is programmed; see
+`docs/doc/index.md` and ADR-0002.
+
 ## The examples
 
 `examples/c/hello_world` is the smallest program that runs on real hardware: it

@@ -39,6 +39,7 @@ RoboHubError avr_platform_init(RoboHubAVRUART* console_uart)
     return ROBOHUB_OK;
 }
 
+// @req AVR-0003
 void rho_avr_halt(void)
 {
 #if defined(__AVR__)

@@ -1,0 +1,170 @@
+# What the AVR platform gives RoboHub: the robohub-common contracts on an
+# ATmega328P, the Arduino UNO R3's board facts, flashing with avrdude, the
+# console and runtime hooks, the device keystore and the nonce counter in EEPROM,
+# and what it needs on the machine (src/, boards/uno-r3/, targets/, module.yml).
+# Written in the R5 backfill from the documentation, the changelog, the code, the
+# host tests and the smoke builds; proposed until the maintainer approves them.
+level: NODE
+prefix: AVR
+title: AVR platform
+requirements:
+  - id: AVR-0001
+    title: The ATmega328P answers the HAL contracts
+    statement: >
+      The platform shall implement the robohub-common contracts for GPIO, UART,
+      timer, ADC, PWM, I2C, SPI, 1-Wire and DHT on the ATmega328P, each compiled
+      only when its RH_HAL_<NAME> symbol is set once a configuration is known,
+      and the UNO R3 board shall register `user_led`, `gpio0`, `uart0` and
+      `system_timer`, and `onewire0`, `dht0`, `adc0`, `pwm0`, `i2c0` and `spi0`
+      when their HALs are selected.
+    rationale: A device program is written against the contracts once; the platform is what makes it run on an 8-bit part with 2 KB of RAM.
+    satisfies: [SYS-0046]
+    status: proposed
+    verification: demonstration
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [hal]
+
+  - id: AVR-0002
+    title: The console says when it cannot write
+    statement: >
+      The console contract shall refuse a write before robohub_console_init
+      (ROBOHUB_CONSOLE_ERR_STATE), report a board with no console UART as
+      ROBOHUB_CONSOLE_ERR_UNSUPPORTED, refuse a null buffer with a non-zero length
+      (ROBOHUB_CONSOLE_ERR_INVALID), report a USART that refuses as
+      ROBOHUB_CONSOLE_ERR_TIMEOUT without counting the bytes, and count every byte
+      written; a second init shall not reset the count.
+    rationale: A console that claims a write that never happened leaves a board that says nothing and looks fine.
+    satisfies: [SYS-0050]
+    status: proposed
+    verification: test
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [console]
+
+  - id: AVR-0003
+    title: A program's output and its panic go where the part can take them
+    statement: >
+      rho_avr_write shall send a Rho program's output to the board's console
+      USART, returning -1 when there is none, and rho_avr_halt shall end a panic
+      with interrupts disabled in a loop of the part's `break` instruction rather
+      than the C library's exit.
+    rationale: A part with a debugger attached stops where the failure is; one without stays there instead of running into whatever bytes follow.
+    satisfies: [SYS-0050]
+    status: proposed
+    verification: inspection
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [runtime, console]
+
+  - id: AVR-0004
+    title: Both examples build for the UNO R3
+    statement: >
+      The uno-r3 board shall declare the ATmega328P at 16 MHz with avr-gcc, its
+      pins (LED on D13, UART0 on D0/D1, I2C on A4/A5, SPI on D10-D13) and no
+      linker script of its own, and the C and the Rho hello_world examples shall
+      build for it with `rho build -target uno-r3`.
+    rationale: The build is the platform's smoke test; avr-gcc knows where an AVR's vector table belongs.
+    satisfies: [SYS-0042]
+    status: proposed
+    verification: test
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [board, build]
+
+  - id: AVR-0005
+    title: An UNO R3 is flashed over its serial line
+    statement: >
+      The uno-r3 target spec shall flash with `avrdude -p m328p -c arduino -b
+      115200 -D`, writing the image to the serial line named by AVRDUDE_PORT and
+      /dev/ttyUSB0 when it is unset.
+    rationale: Which line a board is on is a fact about the machine, not the board.
+    satisfies: [SYS-0049]
+    status: proposed
+    verification: inspection
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [flash, avrdude]
+
+  - id: AVR-0006
+    title: A rotated board key is kept in EEPROM below the nonce counter
+    statement: >
+      The platform shall keep the A/B records of robohub/keystore_core.h in the
+      80 bytes of EEPROM directly below the nonce counter — slot A at E2END-83,
+      slot B at E2END-43 (0x3AC and 0x3D4 on an ATmega328P), unless
+      RH_KEYSTORE_EEPROM_BASE moves them — written with eeprom_update_block so
+      that bytes already holding their value are not rewritten.
+    rationale: A key rotated without a cable must survive a reset and a reflash that keeps EEPROM; skipping unchanged bytes spares the cells' endurance.
+    satisfies: [SYS-0022]
+    status: proposed
+    verification: inspection
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [keystore, key-rotation, eeprom]
+
+  - id: AVR-0007
+    title: A nonce is a boot counter and a call counter
+    statement: >
+      robohub_platform_nonce shall, on its first call after a boot, advance the
+      32-bit boot counter in the last four bytes of EEPROM (or seed it, when it
+      reads as erased, as AVR-0009 says), and fill each nonce with that boot
+      count, then the count of nonces asked for since the boot, then zeros.
+    rationale: An ATmega has no random generator, and a nonce only has to be unique; the pair never repeats while EEPROM keeps its value.
+    satisfies: [SYS-0020, SYS-0023]
+    decided_by: [ADR-0001, ADR-0002]
+    status: proposed
+    verification: test
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [security, nonce, eeprom]
+
+  - id: AVR-0008
+    title: What a build and a flash need on the machine is declared
+    statement: >
+      The platform's manifest shall declare in `system_deps` avr-gcc (installed
+      with avr-libc), avr-objcopy, avr-size and avrdude, each with the apt and
+      brew package that provides it.
+    rationale: A machine set up from the manifest alone, such as a fresh CI runner, must be able to build; Debian ships avr-libc apart from gcc-avr.
+    satisfies: [SYS-0004]
+    status: proposed
+    verification: inspection
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [system-deps]
+
+  - id: AVR-0009
+    title: A nonce is not said again after an EEPROM erase
+    statement: >
+      robohub_platform_nonce shall, when the boot counter reads as erased
+      (0xFFFFFFFF), take the counter's first value from 64 periods of the
+      watchdog's jitter against the CPU clock rather than advancing it, give
+      no nonce and write nothing when fewer than 8 of the periods differ from
+      the one before or the WDTON fuse leaves the watchdog no interrupt mode,
+      and touch no EEPROM byte below the counter; so that no
+      nonce said before a chip erase is said again under the board's key after
+      it.
+    rationale: A chip erase without EESAVE puts the counter back while the compiled-in key stays the same; a counter restarted from there repeats the first boots' nonces, and a session answer recorded then would be taken again.
+    satisfies: [SYS-0020, SYS-0023]
+    decided_by: [ADR-0002]
+    status: proposed
+    verification: test
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [security, nonce, eeprom]
+
+  - id: AVR-0010
+    title: Flashing an UNO R3 leaves its EEPROM as it is
+    statement: >
+      The uno-r3 target spec shall flash through the board's bootloader with
+      avrdude's -D, so that no chip erase is asked for and the nonce counter
+      and the device keystore in EEPROM survive every flash; the documentation
+      shall say that an ISP programmer erases EEPROM unless the EESAVE fuse is
+      programmed, and how to program it.
+    rationale: The nonce counter is only unique while EEPROM keeps its value; the flashing path a project uses must not be what resets it.
+    satisfies: [SYS-0049, SYS-0020]
+    decided_by: [ADR-0002]
+    status: proposed
+    verification: inspection
+    owner: maintainer
+    changed: 2026-11-19
+    tags: [flash, avrdude, eeprom, security]
