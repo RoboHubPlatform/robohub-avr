@@ -82,3 +82,7 @@ before. The uno-r3 flash command passes avrdude `-D`, so `rho flash` never asks
 for a chip erase and EEPROM survives it (AVR-0010; uno-r3 0.1.1); the docs say how to program
 EESAVE before using an ISP programmer. `tests/unit/test_nonce.c` simulates reboots
 and chip erases over a fake EEPROM and checks no nonce is said twice.
+
+## [0.3.0] - 2026-11-20
+
+The health contracts on the ATmega328P (AVR-0011, robohub-common 1.3.0): the watchdog in interrupt-and-reset mode — its interrupt is the early warning that writes the record, and the reset follows one period later, so a period is two halves (8000 ms: a 4 s warning, then the reset); stoppable unless WDTON is programmed. MCUSR is saved and cleared in `.init3`, with the watchdog switched off there so a watchdog reset does not repeat before `main`; when the UNO's optiboot has cleared it, its copy in r2 is taken in `.init0`. Optiboot passes every reset-pin press and upload through its own watchdog, so a watchdog flag is reported as `watchdog` only when this program's early warning marked it, and as `unknown` otherwise. The fault record and boot count live in 32 bytes of `.noinit` RAM.

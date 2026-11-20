@@ -117,6 +117,7 @@ set(ROBOHUB_AVR_BAREMETAL_SOURCES
     src/platform/avr_platform.c
     src/platform/avr_nonce.c
     src/platform/avr_keystore.c
+    src/platform/avr_health.c
 )
 
 # And the driver for each symbol the project set. A symbol nobody set contributes
@@ -187,6 +188,9 @@ target_link_libraries(robohub-avr PUBLIC rho::robohub-common)
 # weak defaults in robohub-common even if those were seen first.
 if(NOT ROBOHUB_AVR_HOSTED)
     target_link_options(robohub-avr INTERFACE "LINKER:--undefined=rh_keystore_platform")
+    # The same for the health contracts (avr_health.c): the watchdog with its
+    # early warning, MCUSR saved at startup, and .noinit RAM.
+    target_link_options(robohub-avr INTERFACE "LINKER:--undefined=rh_health_platform")
 endif()
 
 target_include_directories(robohub-avr PUBLIC
