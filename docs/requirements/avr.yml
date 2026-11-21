@@ -183,3 +183,21 @@ requirements:
     owner: maintainer
     changed: 2026-11-20
     tags: [health, watchdog, platform]
+
+  - id: AVR-0012
+    title: The UNO R3's health and keystore are checked on the board
+    statement: >
+      An example (`examples/c/health_check`) shall walk an UNO R3 through a
+      watchdog reset, a recorded watchdog warning and a fed watchdog (AVR-0011),
+      calling the contracts directly since the board runs no core, and store a
+      key, reset, load the same key, store a second and load it (the keystore in
+      EEPROM), printing `health-check: passed`; it shall be built by the tests and
+      declared skipped until run on a board.
+    rationale: The health contracts and the keystore are only shown to hold on the hardware they run on (robohub ADR-0025, 5).
+    satisfies: [SYS-0070, SYS-0072]
+    decided_by: [robohub:ADR-0025]
+    status: approved
+    verification: test
+    owner: maintainer
+    changed: 2026-11-21
+    tags: [health, keystore, on-target]

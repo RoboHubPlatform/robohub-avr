@@ -1,0 +1,86 @@
+#
+# health_check — the health contracts and the keystore on an UNO R3 (AVR-0011,
+# AVR-0012): three boots, two watchdog resets and a fed watchdog, on the serial
+# console at 115200. `python3 health_check.py` builds, flashes and reads it.
+#
+# @project RoboHub Platform
+# @license MIT
+#
+
+module:
+  name: health-check
+  id: robohub.example.health-check-avr-c
+  type: module
+  version: 0.1.0
+  description: >
+    The health contracts and the keystore on an UNO R3: a watchdog reset with its
+    early warning recorded, the keystore across two resets, a fed watchdog.
+
+  maintainer: "Aurel Miron"
+  license: "MIT"
+  created: "2026-11-21"
+
+main: src/main.c
+
+build:
+  language: c
+
+  # The program's own sources. The entry is compiled with these; a directory is
+  # not walked, because a directory holds whatever a person left in it.
+  sources:
+    - src/main.c
+
+  # Where this project's built binary is written, inside the build directory.
+  output_dir: output
+
+  # The presets this program is written for. A build names one of them with
+  # `--preset`, and the platform that provides it is found through the
+  # dependencies below.
+  presets:
+    - uno-r3
+
+depends:
+  # The platform that implements the interfaces this program is written against,
+  # and that provides the preset above.
+  - name: robohub-avr
+    type: c
+    path: ${ROBOHUB_WORKSPACE}/robohub-avr
+    git: https://github.com/RoboHubPlatform/robohub-avr
+    branch: main
+
+# The C this program may call.
+c_connection:
+  # The platform's exported CMake target.
+  library: "robohub-avr"
+  headers:
+    - platform.h
+    - console.h
+    - gpio.h
+    - timer.h
+    - error.h
+    - types.h
+    - registry.h
+
+config:
+  dialect: linux
+  kconfig_fragments:
+    - Kconfig
+  # Where this program writes the symbols it sets.
+  values_file: project.conf
+
+package:
+  kind: library
+  binary: false
+
+metadata:
+  tags:
+    - example
+    - avr
+    - arduino
+    - uno
+    - baremetal
+    - health
+    - keystore
+    - on-target-test
+  stability: experimental
+  visibility: public

@@ -86,3 +86,14 @@ and chip erases over a fake EEPROM and checks no nonce is said twice.
 ## [0.3.0] - 2026-11-20
 
 The health contracts on the ATmega328P (AVR-0011, robohub-common 1.3.0): the watchdog in interrupt-and-reset mode — its interrupt is the early warning that writes the record, and the reset follows one period later, so a period is two halves (8000 ms: a 4 s warning, then the reset); stoppable unless WDTON is programmed. MCUSR is saved and cleared in `.init3`, with the watchdog switched off there so a watchdog reset does not repeat before `main`; when the UNO's optiboot has cleared it, its copy in r2 is taken in `.init0`. Optiboot passes every reset-pin press and upload through its own watchdog, so a watchdog flag is reported as `watchdog` only when this program's early warning marked it, and as `unknown` otherwise. The fault record and boot count live in 32 bytes of `.noinit` RAM.
+
+## [0.3.1] - 2026-11-21
+
+A health check for the board (AVR-0012, robohub ADR-0025). The UNO R3 runs no core, so `examples/c/health_check` calls the contracts itself, across three boots:
+
+- key A is stored in EEPROM, and the watchdog is started and never fed;
+- its early warning has written the record, key A has held across the reset, and key B is stored before the watchdog is starved again;
+- key B has held, and the watchdog is fed for 20 s.
+
+The check prints `health-check: passed`, and `health_check.py` builds it, flashes it and reads the console. It is built with the tests, and the run on a board is declared skipped until one is on the bench. The check's keys have their own scope and epoch 0, so no session uses them, but they replace a key the board was rotated to.
+

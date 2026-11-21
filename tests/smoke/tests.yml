@@ -32,3 +32,25 @@ suites:
       project: examples/rho/hello_world
       target: uno-r3
     tags: [smoke, hardware, avr, rho]
+
+  # The health contracts and the keystore on a board (AVR-0011, AVR-0012):
+  # examples/c/health_check walks an UNO R3 through two watchdog resets with the
+  # early warning recorded and a key held in EEPROM across each, then a fed
+  # watchdog, and says "health-check: passed"; health_check.py builds, flashes and
+  # reads it. The build runs here; the board run is declared skipped until one is
+  # on the bench.
+  - name: the health check builds for the board
+    kind: build
+    enabled: true
+    build:
+      project: examples/c/health_check
+      target: uno-r3
+    tags: [smoke, avr, health]
+
+  # @verifies AVR-0011, AVR-0012
+  - name: health-on-target
+    kind: command
+    command: [python3, examples/c/health_check/health_check.py]
+    tags: [on-target, avr, health]
+    status: skip
+    reason: needs an UNO R3 on USB (AVR_PORT); prints "OK" when the health contracts and the keystore held
